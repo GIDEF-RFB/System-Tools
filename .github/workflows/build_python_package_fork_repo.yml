@@ -1,0 +1,68 @@
+# This workflow will install Python dependencies, run tests and pylint with a
+# variety of Python versions
+
+name: Deployment python module to development environment
+
+on:
+  workflow_call:
+    inputs:
+      package-name:
+        description: Name of the python package
+        required: true
+        type: string
+
+      package-path:
+        description: Path to the package definition files
+        required: true
+        type: string
+
+      source-path:
+        description: Path to the package source files
+        required: true
+        type: string
+
+      python-version:
+        description: Python version to use in python environment setup for QA test and build package.
+        required: false
+        type: string
+        default: "3.7"
+
+      is-test-package:
+        description: True if is a test package for testPypi
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+
+  call-setup-python:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # python-version: ["3.7", "3.9", "3.11"]
+        # python-version: ["3.7"]
+        python-version: ["${{ inputs.python-version }}"]
+
+    environment: development
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup python environment
+        uses: GIDEF-RFB/System-Tools/.github/actions/setup-python@develop
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Perform QA test and build package
+        uses: GIDEF-RFB/System-Tools/.github/actions/build-package@develop
+        with:
+          source-path: ${{ inputs.source-path }}
+          package-path: ${{ inputs.package-path }}
+          is-test-package: ${{ inputs.is-test-package }}
+
+      - name: Upload package
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ inputs.package-name }}
+          path: |
+            dist
