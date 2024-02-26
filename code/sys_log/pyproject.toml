@@ -162,6 +162,6 @@ dependencies = {file = ["requirements.txt"]}
 
 [tool.setuptools_scm]
 root = "../../"
-write_to = "code/sys_log/src/system_logger_tool/__version__.py"
+write_to = "code/sys_log/src/csic_logger_tool/__version__.py"
 version_scheme="python-simplified-semver"
 normalize="True"
