@@ -9,7 +9,7 @@ import context #pylint: disable=unused-import
 #######################         GENERIC IMPORTS          #######################
 
 #######################      LOGGING CONFIGURATION       #######################
-from src.system_logger_tool import SysLogLoggerC,\
+from src.csic_logger_tool import SysLogLoggerC,\
     sys_log_logger_get_module_logger, Logger
 
 cycler_logger = SysLogLoggerC(file_log_levels="./code/sys_log/tests/log_config.yaml")
