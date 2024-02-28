@@ -11,7 +11,6 @@ from typing import Any, Iterable, Callable, Mapping
 from enum import Enum
 from time import time, sleep
 #######################      SYSTEM ABSTRACTION IMPORTS  #######################
-from rfb_config_tool import sys_conf_read_config_params
 from rfb_logger_tool import Logger, SysLogLoggerC, sys_log_logger_get_module_logger
 
 if __name__ == "__main__":
