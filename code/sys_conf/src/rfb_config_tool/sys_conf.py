@@ -13,7 +13,7 @@ from os import getenv
 import yaml
 
 #######################      LOGGING CONFIGURATION       #######################
-from system_logger_tool import Logger, SysLogLoggerC, sys_log_logger_get_module_logger
+from rfb_logger_tool import Logger, SysLogLoggerC, sys_log_logger_get_module_logger
 if __name__ == "__main__":
     cycler_logger = SysLogLoggerC(file_log_levels='./log_config.yaml')
 log: Logger = sys_log_logger_get_module_logger(__name__)
