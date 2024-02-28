@@ -7,7 +7,7 @@
 #######################         GENERIC IMPORTS          #######################
 
 #######################       THIRD PARTY IMPORTS        #######################
-from system_config_tool import sys_conf_read_config_params, SysConfSectionNotFoundErrorC
+from rfb_config_tool import sys_conf_read_config_params, SysConfSectionNotFoundErrorC
 
 #######################          MODULE IMPORTS          #######################
 
