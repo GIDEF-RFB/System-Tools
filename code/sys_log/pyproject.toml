@@ -9,7 +9,7 @@ build-backend = "setuptools.build_meta"
 # users can install this project, e.g.:
 #
 # $ pip install <sampleproject>
-name = "csic_logger_tool"
+name = "rfb_logger_tool"
 
 # Versions should comply with PEP 440:
 # https://www.python.org/dev/peps/pep-0440/
@@ -162,6 +162,6 @@ dependencies = {file = ["requirements.txt"]}
 
 [tool.setuptools_scm]
 root = "../../"
-write_to = "code/sys_log/src/csic_logger_tool/__version__.py"
+write_to = "code/sys_log/src/rfb_logger_tool/__version__.py"
 version_scheme="python-simplified-semver"
 normalize="True"
