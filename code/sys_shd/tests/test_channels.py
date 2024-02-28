@@ -16,7 +16,7 @@ from time import sleep
 from pytest import fixture, mark
 
 #######################      SYSTEM ABSTRACTION IMPORTS  #######################
-from system_logger_tool import Logger, SysLogLoggerC, sys_log_logger_get_module_logger
+from rfb_logger_tool import Logger, SysLogLoggerC, sys_log_logger_get_module_logger
 
 main_logger = SysLogLoggerC(file_log_levels="code/sys_shd/tests/log_config.yaml")
 log: Logger = sys_log_logger_get_module_logger(name="test_shd_chanel")
@@ -25,7 +25,7 @@ log: Logger = sys_log_logger_get_module_logger(name="test_shd_chanel")
 
 #######################          MODULE IMPORTS          #######################
 sys.path.append(os.getcwd()+'/code/')
-from sys_shd.src.system_shared_tool import SysShdIpcChanC, SysShdChanC
+from sys_shd.src.rfb_shared_tool import SysShdIpcChanC, SysShdChanC
 #######################          PROJECT IMPORTS         #######################
 
 #######################              ENUMS               #######################

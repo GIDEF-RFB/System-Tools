@@ -11,7 +11,7 @@ from typing import Any, Iterable, Callable, Mapping
 from enum import Enum
 from time import time, sleep
 #######################      SYSTEM ABSTRACTION IMPORTS  #######################
-from system_logger_tool import Logger, SysLogLoggerC, sys_log_logger_get_module_logger
+from rfb_logger_tool import Logger, SysLogLoggerC, sys_log_logger_get_module_logger
 
 if __name__ == "__main__":
     cycler_logger = SysLogLoggerC()
@@ -22,11 +22,9 @@ log: Logger = sys_log_logger_get_module_logger(__name__)
 
 #######################          PROJECT IMPORTS         #######################
 
-#######################              ENUMS               #######################
-
-#######################             CLASSES              #######################
+######################             CONSTANTS              ######################
 _TO_MS = 1000
-
+#######################              ENUMS               #######################
 class SysShdNodeStatusE(Enum):
     '''
     Enum class for the node state
@@ -37,6 +35,7 @@ class SysShdNodeStatusE(Enum):
     INIT = 2
     STOP = 3
 
+#######################             CLASSES              #######################
 class SysShdNodeParamsC:
     '''
     Class that contains the can parameters in order to create the thread correctly

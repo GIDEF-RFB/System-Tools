@@ -15,14 +15,19 @@ The maximum length of a message sent through POSIX queue is define in the file:
 `cat /proc/sys/fs/mqueue/msgsize_max`
 
 Can be change using the command:
-`sudo sh -c 'echo 200 > /proc/sys/fs/mqueue/msgsize_max'`
+`sudo sh -c 'echo 500 > /proc/sys/fs/mqueue/msgsize_max'`
 
 The maximum number of a messages allocated in a POSIX queue is define in the file:
 `cat /proc/sys/fs/mqueue/msg_max`
 Can be change using the command:
-`sudo sh -c 'echo 200 > /proc/sys/fs/mqueue/msg_max'`
+`sudo sh -c 'echo 400 > /proc/sys/fs/mqueue/msg_max'`
 
 The parameters `max_msg` and `max_message_size` given to `SysShdIpcChanC` must be
 lower that ones specified on Linux files.
 
 For further information, check the [Github Issue: Change default values for message queue](https://github.com/osvenskan/posix_ipc/issues/21#issuecomment-912659571)
+
+Co-authors:
+[Roberto Aldea](https://pypi.org/user/Raldea/), 
+[Javier Sanz](https://pypi.org/user/javibu13/),
+[Marius Crisan](https://pypi.org/user/mariuscrsn/)

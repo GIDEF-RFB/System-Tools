@@ -11,7 +11,7 @@ from __future__ import annotations
 #######################         GENERIC IMPORTS          #######################
 
 #######################      SYSTEM ABSTRACTION IMPORTS  #######################
-from system_logger_tool import Logger, SysLogLoggerC, sys_log_logger_get_module_logger
+from rfb_logger_tool import Logger, SysLogLoggerC, sys_log_logger_get_module_logger
 if __name__ == "__main__":
     cycler_logger = SysLogLoggerC(file_log_levels='./log_config.yaml')
 log: Logger = sys_log_logger_get_module_logger(__name__)
@@ -19,7 +19,7 @@ log: Logger = sys_log_logger_get_module_logger(__name__)
 #######################       THIRD PARTY IMPORTS        #######################
 
 #######################          PROJECT IMPORTS         #######################
-from system_config_tool import sys_conf_update_config_params
+from rfb_config_tool import sys_conf_update_config_params
 
 #######################          MODULE IMPORTS          #######################
 
@@ -27,8 +27,10 @@ from system_config_tool import sys_conf_update_config_params
 # For further information check out README.md
 DEFAULT_CHAN_NUM_MSG : int = 100 # Max number of allowed message per chan
 DEFAULT_IPC_MSG_SIZE : int = 100 # Size of message sent through IPC message queue
-DEFAULT_CHAN_TIMEOUT : int = 1
+DEFAULT_CHAN_TIMEOUT : int|None = None # Timeout for IPC message queue if None while wait forever
+DEFAULT_GPIO_CONFIG_PATH    : str = 'config_gpio.yaml'
 
-CONSTANTS_NAMES = ('DEFAULT_CHAN_NUM_MSG', 'DEFAULT_IPC_MSG_SIZE', 'DEFAULT_CHAN_TIMEOUT')
+CONSTANTS_NAMES = ('DEFAULT_CHAN_NUM_MSG', 'DEFAULT_IPC_MSG_SIZE', 'DEFAULT_CHAN_TIMEOUT',
+                   'DEFAULT_GPIO_CONFIG_PATH')
 sys_conf_update_config_params(context=globals(),
                               constants_names=CONSTANTS_NAMES)
