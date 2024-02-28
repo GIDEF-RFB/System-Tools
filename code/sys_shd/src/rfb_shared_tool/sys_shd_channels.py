@@ -13,7 +13,7 @@ from pickle import dumps, loads, HIGHEST_PROTOCOL
 
 
 #######################      SYSTEM ABSTRACTION IMPORTS  #######################
-from system_logger_tool import Logger, SysLogLoggerC, sys_log_logger_get_module_logger
+from rfb_logger_tool import Logger, SysLogLoggerC, sys_log_logger_get_module_logger
 
 if __name__ == "__main__":
     cycler_logger = SysLogLoggerC()
@@ -158,6 +158,7 @@ class SysShdIpcChanC(ipc.MessageQueue): #pylint: disable= c-extension-no-member
             msg_decoded = loads(message, encoding='utf-8')
         except Exception as err:
             log.error(f"Impossible to receive message with error: {err}")
+            self.close()
             raise err
         self.block = False
         return msg_decoded
@@ -178,6 +179,7 @@ class SysShdIpcChanC(ipc.MessageQueue): #pylint: disable= c-extension-no-member
                 msg_decoded = loads(message, encoding='utf-8')
             except Exception as err:
                 log.error(f"Impossible to receive message with error {err}")
+                self.close()
                 raise err
             self.block = True
         return msg_decoded
@@ -199,6 +201,7 @@ class SysShdIpcChanC(ipc.MessageQueue): #pylint: disable= c-extension-no-member
             self.send(encoded_data)
         except Full as err:
             log.error(err)
+            self.close()
             raise SysShdErrorC(message=("Data can't be put in queue because it's full "
                                     f" with error {err}")) from err
 

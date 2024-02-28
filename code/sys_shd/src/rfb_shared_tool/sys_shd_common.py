@@ -11,26 +11,19 @@ from typing import Any, Iterable, Callable, Mapping
 from enum import Enum
 from time import time, sleep
 #######################      SYSTEM ABSTRACTION IMPORTS  #######################
-from system_config_tool import sys_conf_read_config_params
-from system_logger_tool import Logger, SysLogLoggerC, sys_log_logger_get_module_logger
+from rfb_config_tool import sys_conf_read_config_params
+from rfb_logger_tool import Logger, SysLogLoggerC, sys_log_logger_get_module_logger
 
 if __name__ == "__main__":
     cycler_logger = SysLogLoggerC()
 log: Logger = sys_log_logger_get_module_logger(__name__)
 #######################       THIRD PARTY IMPORTS        #######################
-from RPi.GPIO import  setmode, BCM, BOARD, setup, output, HIGH, LOW, OUT #pylint: disable= no-name-in-module
 
 #######################          MODULE IMPORTS          #######################
 
 #######################          PROJECT IMPORTS         #######################
 
 ######################             CONSTANTS              ######################
-from .context import DEFAULT_GPIO_CONFIG_PATH
-gpio_mode = sys_conf_read_config_params(filename=DEFAULT_GPIO_CONFIG_PATH, section= 'GPIO_BOARD')
-if gpio_mode == 'BOARD':
-    setmode(BOARD)
-else:
-    setmode(BCM)
 _TO_MS = 1000
 #######################              ENUMS               #######################
 class SysShdNodeStatusE(Enum):
@@ -73,8 +66,6 @@ class SysShdNodeC(Thread):
             working_flag (Event): [description]
             node_params (SysShdNodeParamsC, optional): .Defaults to SysShdNodeParamsC().
         '''
-        port: int = sys_conf_read_config_params(filename=DEFAULT_GPIO_CONFIG_PATH, section= name)
-        self.gpio: SysShdPeripheralC = SysShdPeripheralC(port=port)
         super().__init__(group = None, target = node_params.target, name = name,
                          args = node_params.args, kwargs = node_params.kwargs,
                          daemon = node_params.daemon)
@@ -111,9 +102,7 @@ class SysShdNodeC(Thread):
         while self.working_flag.is_set():
             try:
                 next_time = time()+self.cycle_period/_TO_MS
-                self.gpio.set_gpio_up()
                 self.process_iteration()
-                self.gpio.set_gpio_down()
                 # Sleep the remaining time
                 sleep_time = next_time-int(time())
                 # sleep_time is measure in miliseconds
@@ -146,24 +135,3 @@ class SysShdErrorC(Exception):
             message (str): explanation of the error
         '''
         super().__init__(message)
-
-class SysShdPeripheralC:
-    '''
-    Class that contains the common methods to toggle gpios.
-    '''
-    def __init__(self, port: int) -> None:
-        self.port: int = port
-        setup(port, OUT)
-    def set_gpio_up(self) -> None:
-        """
-        Sets the GPIO pin to a high state.
-        """
-        log.debug(f"Setting GPIO {self.port} up")
-        output(self.port, HIGH)
-
-    def set_gpio_down(self) -> None:
-        """
-        Sets the GPIO pin to a low state.
-        """
-        log.debug(f"Setting GPIO {self.port} down")
-        output(self.port, LOW)

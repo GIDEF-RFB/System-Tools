@@ -14,7 +14,7 @@ from typing import List
 
 
 #######################      SYSTEM ABSTRACTION IMPORTS  #######################
-from system_logger_tool import Logger, SysLogLoggerC, sys_log_logger_get_module_logger
+from rfb_logger_tool import Logger, SysLogLoggerC, sys_log_logger_get_module_logger
 
 if __name__ == "__main__":
     cycler_logger = SysLogLoggerC()
