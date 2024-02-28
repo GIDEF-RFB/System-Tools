@@ -10,7 +10,7 @@ import context #pylint: disable=unused-import
 #######################         GENERIC IMPORTS          #######################
 
 #######################      LOGGING CONFIGURATION       #######################
-from src.system_logger_tool import sys_log_logger_get_module_logger, Logger
+from src.rfb_logger_tool import sys_log_logger_get_module_logger, Logger
 
 log: Logger = sys_log_logger_get_module_logger(__name__)
 
