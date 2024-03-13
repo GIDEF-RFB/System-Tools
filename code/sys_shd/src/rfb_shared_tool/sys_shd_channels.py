@@ -20,8 +20,8 @@ if __name__ == "__main__":
 log: Logger = sys_log_logger_get_module_logger(__name__)
 
 #######################       THIRD PARTY IMPORTS        #######################
-import posix_ipc as ipc
-
+# import posix_ipc as ipc
+from ipcqueue import posixmq
 #######################          PROJECT IMPORTS         #######################
 
 
@@ -111,7 +111,120 @@ class SysShdChanC(Queue):
         '''
         return self.empty()
 
-class SysShdIpcChanC(ipc.MessageQueue): #pylint: disable= c-extension-no-member
+# class SysShdIpcChanC(ipc.MessageQueue): #pylint: disable= c-extension-no-member
+#     """A subclass of the SHDChannel class  using posix-ipc.
+#     Which will use system queues
+
+#     Args:
+#         Queue ([type]): [description]
+#     """
+#     def __init__(self, name: str= "ipc_queue", max_msg: int = DEFAULT_CHAN_NUM_MSG,\
+#                 max_message_size = DEFAULT_IPC_MSG_SIZE) -> None:
+#         '''
+#         Initialize the python Queue subclass used to intercommunicate threads.
+
+#         Args:
+#             maxsize (int, optional): Queue max size. Defaults to 100
+#         '''
+#         log.debug(f"Creating IPC queue with name {name}")
+#         # Flag O_CREAT-> Open or create a MessageQueue object
+#         # O_CREAT | O_EXCL (or O_CREX) -> the module creates a new object identified by name.
+#         # If an object with that name already exists, the call raises an ExistentialError
+#         q_name: str = '/'+ name
+#         super().__init__(name=q_name, flags=ipc.O_CREAT, #pylint: disable= c-extension-no-member
+#                          max_messages = max_msg, max_message_size=max_message_size)
+#         self.block = True
+
+#     def delete_until_last(self) -> None:
+#         '''
+#         Delete all items from the queue, except the last one.
+#         '''
+#         while self.current_messages > 0:
+#             self.receive(timeout = 0)
+
+#     def receive_data(self, timeout: int|None = DEFAULT_CHAN_TIMEOUT) -> object:
+#         '''
+#         Pop the first element from the queue and return it. If queue is empty,
+#         wait until a new element is pushed to the queue.
+
+#         Returns:
+#             object: The first element of the queue.
+#         '''
+#         msg_decoded = None
+#         self.block = True
+#         try:
+#             message, _ = self.receive(timeout = timeout)
+#             log.debug(f"Receive data: {len(message)} - {type(message)} - {message}")
+#             msg_decoded = loads(message, encoding='utf-8')
+#         except Exception as err:
+#             log.error(f"Impossible to receive message with error: {err}")
+#             self.close()
+#             raise err
+#         self.block = False
+#         return msg_decoded
+
+#     def receive_data_unblocking(self) -> object:
+#         '''
+#         Receive data from the queue in unblocking mode.
+#         Returns:
+#             object: Return the first element from the queue if it is not empty.
+#             Return None otherwise.
+#         '''
+#         msg_decoded = None
+#         if not self.is_empty():
+#             self.block = False
+#             try:
+#                 message, _ = self.receive()
+#                 log.debug(f"Send data: {len(message)} - {type(message)} - {message}")
+#                 msg_decoded = loads(message, encoding='utf-8')
+#             except Exception as err:
+#                 log.error(f"Impossible to receive message with error {err}")
+#                 self.close()
+#                 raise err
+#             self.block = True
+#         return msg_decoded
+
+
+#     def send_data(self, data) -> None:
+#         '''
+#         Push data to the queue .
+
+#         Args:
+#             data (object): Data to be pushed to the queue.
+
+#         Raises:
+#             SysShdErrorC: Throw an exception if the queue is full.
+#         '''
+#         try:
+#             encoded_data: bytes = dumps(obj=data, protocol=HIGHEST_PROTOCOL)
+#             log.debug((f"Send data {self.name}: {len(encoded_data)} -"
+#                            " {type(encoded_data)} - {encoded_data}"))
+#             self.send(encoded_data)
+#         except Full as err:
+#             log.error(err)
+#             self.close()
+#             raise SysShdErrorC(message=("Data can't be put in queue because it's full "
+#                                     f" with error {err}")) from err
+
+#     def is_empty(self) -> bool:
+#         '''
+#         Check if the queue is empty.
+
+#         Returns:
+#             bool: True if the queue is empty, False otherwise.
+#         '''
+#         return self.current_messages == 0
+
+#     def terminate(self) -> None:
+#         """Terminate the queue.
+#         """
+#         try:
+#             self.close()
+#             self.unlink()
+#         except ipc.ExistentialError as err: #pylint: disable= c-extension-no-member
+#             log.error(f"Trying to close/unlink queue {self.name} with error {err}")
+
+class SysShdIpcChanC(posixmq.Queue): #pylint: disable= c-extension-no-member
     """A subclass of the SHDChannel class  using posix-ipc.
     Which will use system queues
 
@@ -127,20 +240,16 @@ class SysShdIpcChanC(ipc.MessageQueue): #pylint: disable= c-extension-no-member
             maxsize (int, optional): Queue max size. Defaults to 100
         '''
         log.debug(f"Creating IPC queue with name {name}")
-        # Flag O_CREAT-> Open or create a MessageQueue object
-        # O_CREAT | O_EXCL (or O_CREX) -> the module creates a new object identified by name.
-        # If an object with that name already exists, the call raises an ExistentialError
-        q_name: str = '/'+ name
-        super().__init__(name=q_name, flags=ipc.O_CREAT, #pylint: disable= c-extension-no-member
-                         max_messages = max_msg, max_message_size=max_message_size)
-        self.block = True
+        self.name: str = '/'+ name
+        super().__init__(name=self.name, #pylint: disable= c-extension-no-member
+                         maxsize = max_msg, maxmsgsize=max_message_size)
 
     def delete_until_last(self) -> None:
         '''
         Delete all items from the queue, except the last one.
         '''
-        while self.current_messages > 0:
-            self.receive(timeout = 0)
+        while self.qsize() > 0:
+            self.get_nowait()
 
     def receive_data(self, timeout: int|None = DEFAULT_CHAN_TIMEOUT) -> object:
         '''
@@ -151,16 +260,14 @@ class SysShdIpcChanC(ipc.MessageQueue): #pylint: disable= c-extension-no-member
             object: The first element of the queue.
         '''
         msg_decoded = None
-        self.block = True
         try:
-            message, _ = self.receive(timeout = timeout)
+            message = self.get(timeout = timeout)
             log.debug(f"Receive data: {len(message)} - {type(message)} - {message}")
             msg_decoded = loads(message, encoding='utf-8')
         except Exception as err:
             log.error(f"Impossible to receive message with error: {err}")
             self.close()
             raise err
-        self.block = False
         return msg_decoded
 
     def receive_data_unblocking(self) -> object:
@@ -172,18 +279,17 @@ class SysShdIpcChanC(ipc.MessageQueue): #pylint: disable= c-extension-no-member
         '''
         msg_decoded = None
         if not self.is_empty():
-            self.block = False
             try:
-                message, _ = self.receive()
-                log.debug(f"Send data: {len(message)} - {type(message)} - {message}")
+                message = self.get_nowait()
+                log.debug(f"Send data: {len(message)}, Queue: {self.qattr()}")
+                # - {type(message)} - {message}")
+                log.debug(f"Message: {message}")
                 msg_decoded = loads(message, encoding='utf-8')
-            except Exception as err:
+            except posixmq.QueueError as err:
                 log.error(f"Impossible to receive message with error {err}")
                 self.close()
                 raise err
-            self.block = True
         return msg_decoded
-
 
     def send_data(self, data) -> None:
         '''
@@ -197,12 +303,16 @@ class SysShdIpcChanC(ipc.MessageQueue): #pylint: disable= c-extension-no-member
         '''
         try:
             encoded_data: bytes = dumps(obj=data, protocol=HIGHEST_PROTOCOL)
-            log.debug(f"Send data: {len(encoded_data)} - {type(encoded_data)} - {encoded_data}")
-            self.send(encoded_data)
-        except Full as err:
+            log.debug(f"Send data: {len(encoded_data)}, Queue: {self.qattr()}")
+            log.debug(f"Message: {encoded_data}")
+            self.put(encoded_data)
+        except posixmq.QueueError as err:
             log.error(err)
-            self.close()
-            raise SysShdErrorC(message=("Data can't be put in queue because it's full "
+            try:
+                self.close()
+            except posixmq.QueueError as er:
+                log.error(er)
+            raise SysShdErrorC(message=("Data can't be put in queue"
                                     f" with error {err}")) from err
 
     def is_empty(self) -> bool:
@@ -212,7 +322,7 @@ class SysShdIpcChanC(ipc.MessageQueue): #pylint: disable= c-extension-no-member
         Returns:
             bool: True if the queue is empty, False otherwise.
         '''
-        return self.current_messages == 0
+        return self.qsize() == 0
 
     def terminate(self) -> None:
         """Terminate the queue.
@@ -220,5 +330,5 @@ class SysShdIpcChanC(ipc.MessageQueue): #pylint: disable= c-extension-no-member
         try:
             self.close()
             self.unlink()
-        except ipc.ExistentialError as err: #pylint: disable= c-extension-no-member
+        except Exception as err: #pylint: disable= c-extension-no-member
             log.error(f"Trying to close/unlink queue {self.name} with error {err}")
