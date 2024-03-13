@@ -304,9 +304,7 @@ class SysShdIpcChanC(posixmq.Queue): #pylint: disable= c-extension-no-member
         try:
             encoded_data: bytes = dumps(obj=data, protocol=HIGHEST_PROTOCOL)
             log.debug(f"Send data: {len(encoded_data)}, Queue: {self.qattr()}")
-            # - {type(message)} - {message}")
             log.debug(f"Message: {encoded_data}")
-            # log.warning(f"Send data {self.name}: {len(encoded_data)} - {type(encoded_data)} - {encoded_data}")
             self.put(encoded_data)
         except posixmq.QueueError as err:
             log.error(err)
