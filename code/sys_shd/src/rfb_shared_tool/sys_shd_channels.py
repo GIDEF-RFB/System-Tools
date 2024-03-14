@@ -262,8 +262,12 @@ class SysShdIpcChanC(posixmq.Queue): #pylint: disable= c-extension-no-member
         msg_decoded = None
         try:
             message = self.get(timeout = timeout)
-            msg_decoded = loads(message, encoding='utf-8')
-            log.debug(f"Receive data: {type(msg_decoded)} - {msg_decoded}")
+            log.debug(f"Receive data: {type(message)} - {message}")
+            if isinstance(message, bytes):
+                msg_decoded = loads(message, encoding='utf-8')
+            else:
+                msg_decoded = message
+            log.debug(f"Receive data decoded: {type(msg_decoded)} - {msg_decoded}")
         except Exception as err:
             log.error(f"Impossible to receive message with error: {err}")
             self.close()
@@ -281,8 +285,12 @@ class SysShdIpcChanC(posixmq.Queue): #pylint: disable= c-extension-no-member
         if not self.is_empty():
             try:
                 message = self.get_nowait()
-                msg_decoded = loads(message, encoding='utf-8')
-                log.debug(f"Receive data: {type(msg_decoded)} - {msg_decoded}")
+                log.debug(f"Receive data: {type(message)} - {message}")
+                if isinstance(message, bytes):
+                    msg_decoded = loads(message, encoding='utf-8')
+                else:
+                    msg_decoded = message
+                log.debug(f"Receive data decoded: {type(msg_decoded)} - {msg_decoded}")
             except posixmq.QueueError as err:
                 log.error(f"Impossible to receive message with error {err}")
                 self.close()
@@ -302,7 +310,7 @@ class SysShdIpcChanC(posixmq.Queue): #pylint: disable= c-extension-no-member
         try:
             encoded_data: bytes = dumps(obj=data, protocol=HIGHEST_PROTOCOL)
             log.debug(f"Send data: {len(encoded_data)}, Queue: {self.qattr()}")
-            log.debug(f"Message: {encoded_data}")
+            log.debug(f"Message: {type(encoded_data)} - {encoded_data}")
             self.put(encoded_data)
         except posixmq.QueueError as err:
             log.error(err)
