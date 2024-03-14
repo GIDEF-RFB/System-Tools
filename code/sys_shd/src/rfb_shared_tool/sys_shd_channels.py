@@ -264,6 +264,7 @@ class SysShdIpcChanC(posixmq.Queue): #pylint: disable= c-extension-no-member
             message = self.get(timeout = timeout)
             log.debug(f"Receive data: {len(message)} - {type(message)} - {message}")
             msg_decoded = loads(message, encoding='utf-8')
+            log.debug(f"Receive data: {type(msg_decoded)} - {msg_decoded}")
         except Exception as err:
             log.error(f"Impossible to receive message with error: {err}")
             self.close()
@@ -281,10 +282,10 @@ class SysShdIpcChanC(posixmq.Queue): #pylint: disable= c-extension-no-member
         if not self.is_empty():
             try:
                 message = self.get_nowait()
-                log.debug(f"Send data: {len(message)}, Queue: {self.qattr()}")
-                # - {type(message)} - {message}")
-                log.debug(f"Message: {message}")
+                log.debug(f"Receive data: {len(message)}, Queue: {self.qattr()}")
+                log.debug(f"Message: {type(msg_decoded)} - {message}")
                 msg_decoded = loads(message, encoding='utf-8')
+                log.debug(f"Receive data: {type(msg_decoded)} - {msg_decoded}")
             except posixmq.QueueError as err:
                 log.error(f"Impossible to receive message with error {err}")
                 self.close()

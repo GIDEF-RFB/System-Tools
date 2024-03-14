@@ -114,7 +114,7 @@ class SysShdNodeC(Thread):
                 sleep(sleep_time)
 
             except Exception as err: #pylint: disable= broad-exception-caught
-                log.error(f"Error  in node {err}")
+                log.error(f"Error  in node {self.name}: {err}")
                 raise SysShdErrorC(err) from err
         # log.warning(f"Stop node {self.name}")
         self.stop()
