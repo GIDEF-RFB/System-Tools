@@ -270,7 +270,8 @@ class SysShdIpcChanC(posixmq.Queue): #pylint: disable= c-extension-no-member
             log.debug(f"Receive data decoded: {type(msg_decoded)} - {msg_decoded}")
         except Exception as err:
             log.error(f"Impossible to receive message with error: {err}")
-            self.close()
+            if isinstance(err, posixmq.QueueError) and err.errno != posixmq.QueueError.TIMEOUT:
+                    self.close()
             raise err
         return msg_decoded
 
