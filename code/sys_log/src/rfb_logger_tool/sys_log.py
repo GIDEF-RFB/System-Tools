@@ -26,7 +26,7 @@ import yaml
 #######################          PROJECT IMPORTS         #######################
 
 #######################              ENUMS               #######################
-dir_path: str = os.path.dirname(p=os.path.realpath(filename=__file__))
+dir_path: str = os.path.dirname(p=os.path.realpath(__file__))
 
 #######################             CLASSES              #######################
 class SysLogLoggerC():
