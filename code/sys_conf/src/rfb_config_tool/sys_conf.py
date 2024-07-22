@@ -88,8 +88,11 @@ def sys_conf_update_config_params(context : dict,
     if section is None:
         section = context['__package__'].split(".")[-1]
     try:
-        custom_params = sys_conf_read_config_params(filename = getenv('CONFIG_FILE_PATH', ''),
-                                                section=section)
+        filename= getenv('CONFIG_FILE_PATH', '')
+        if filename == '':
+            raise SysConfSectionNotFoundErrorC(
+                "CONFIG_FILE_PATH not found in the environment variables")
+        custom_params = sys_conf_read_config_params(filename = filename, section=section)
     except SysConfSectionNotFoundErrorC as error:
         log.warning(error)
     else:
